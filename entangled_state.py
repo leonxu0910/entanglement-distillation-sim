@@ -39,7 +39,7 @@ class QuantumState:
 			raise NormalizationError("Input density matrix is not for a two-qubit quantum state; must be 4x4.s")
 
 	def fidelity(self):
-		""" Computes the overlap of the current state with the singlet state __SINGLET, using 
+		""" Computes the overlap of the current state with the singlet state _SINGLET, using 
 		the vector representation of the Bell states.  
 		"""
 		right_side = np.matmul(self.density, _VEC_SINGLET)
