@@ -43,7 +43,7 @@ def noisy_channel(pure_state, probs=None, epsilon = 0.01):
 
 	net_prob = p_1 + p_2 + p_3 
 	if (1.0 + self.epsilon < net_prob) or (net_prob < 1.0 - self.epsilon):
-			raise NormalizationError("Probabilities are not normalized within given epsilon parameter.")
+		raise NormalizationError("Probabilities are not normalized within given epsilon parameter.")
 	elif epsilon > 0.1: 
 		raise ToleranceError("Epsilon must be < 0.1.")
 
