@@ -27,6 +27,8 @@ rho_phi_n = np.outer(phi_n, phi_n)	# |phi-><phi-|
 
 # unilateral pauli rotations
 uni_rot_y_pi = np.kron(np.matrix([[0,-1],[1,0]]), np.identity(2))	# unilateral pauli-y rotation by pi degrees
+uni_rot_z_pi = np.kron(np.matrix([[complex(0,-1),0],[0,complex(0,1)]]), np.identity(2))
+uni_rot_x_pi = np.kron(np.matrix([[0,complex(0,-1)],[complex(0,-1),0]]), np.identity(2))
 
 # bilateral rotations
 rot_y = np.matrix([[np.sqrt(2)/2,-np.sqrt(2)/2],[np.sqrt(2)/2,np.sqrt(2)/2]])
@@ -38,6 +40,14 @@ bi_rot_x = np.kron(rot_x, rot_x)
 
 # unitary xor operation
 U_xor = np.outer(s11, s10) + np.outer(s10, s11) + np.outer(s00, s00) + np.outer(s01, s01)
+def base_vec(ind):
+	vec = np.array([0 for i in range(16)])
+	vec[ind] = 1
+	return vec
+BXOR = np.outer(base_vec(0),base_vec(0))+np.outer(base_vec(1),base_vec(1))+np.outer(base_vec(2),base_vec(2))+np.outer(base_vec(3),base_vec(3))+np.outer(base_vec(4),base_vec(5))+np.outer(base_vec(5),base_vec(4))+np.outer(base_vec(6),base_vec(7))+np.outer(base_vec(7),base_vec(6))+np.outer(base_vec(8),base_vec(10))+np.outer(base_vec(9),base_vec(11))+np.outer(base_vec(10),base_vec(8))+np.outer(base_vec(11),base_vec(9))+np.outer(base_vec(12),base_vec(15))+np.outer(base_vec(13),base_vec(14))+np.outer(base_vec(14),base_vec(13))+np.outer(base_vec(15),base_vec(12))
+
+# print(BXOR)
+
 
 def two_qubits_state(prob_psi_n, prob_psi_p, prob_phi_p, prob_phi_n):
 	# define density matrix of an arbitary state in bell basis
@@ -62,8 +72,18 @@ def F_prime(F):
 def operate(O, M):
 	# apply operator O onto density matrix M
 	return np.matmul(O, np.matmul(M, O.getH()))
-	
 
+F = 0.4
+state = two_qubits_state(F, (1-F)/3, (1-F)/3, (1-F)/3)
+print(fidelity(state))
+
+# BXOR test
+# state1 = np.kron(rho_psi_p, rho_psi_n)
+# state2 = np.kron(rho_psi_n, rho_phi_n)
+# result = operate(np.matrix(BXOR), np.matrix(state1))
+# print(state1)
+# print(result)
+# print(np.array_equal(state2,result))
 
 # unilateral y rotation test code
 # protocol A step 1: rotate a mostly psi- Werner state to a mostly phi+ state, ie. (R_y(pi) tp I_2) W_F (R_y(pi) tp I_2)^T
