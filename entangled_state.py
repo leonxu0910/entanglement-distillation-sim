@@ -2,29 +2,8 @@
 Implementation of a simulated entangled quantum state. 
 """
 import numpy as np
-from quantum_errors import NormalizationError, ToleranceError 
-
-###### CONSTANTS ######
-
-# Basis vectors
-_UP = np.array([1,0])
-_DOWN = np.array([0,1])
-
-# Bell states, as matrices 
-_SINGLET = 1/np.sqrt(2) * (np.outer(_UP, _DOWN) - np.outer(_DOWN, _UP))
-_TRIP_1 = 1/np.sqrt(2) * (np.outer(_UP, _DOWN) + np.outer(_DOWN, _UP))
-_TRIP_2 = 1/np.sqrt(2) * (np.outer(_UP, _UP) + np.outer(_DOWN, _DOWN))
-_TRIP_3 = 1/np.sqrt(2) * (np.outer(_UP, _UP) - np.outer(_DOWN, _DOWN))
-_BELL_STATES = [_SINGLET, _TRIP_1, _TRIP_2, _TRIP_3] # Useful for some methods below 
-
-# Bell states, as vectors in a four-dimensional Hilbert space spanned by |00>, |01>, |10>, and |11> 
-_VEC_SINGLET = np.array([0, -1/np.sqrt(2), 1/np.sqrt(2), 0])
-_VEC_TRIP_1 = np.array([0, 1/np.sqrt(2), 1/np.sqrt(2), 0])
-_VEC_TRIP_2 = np.array([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
-_VEC_TRIP_3 = np.array([-1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
-_BELL_VECTORS = [_VEC_SINGLET, _VEC_TRIP_1, _VEC_TRIP_2, _VEC_TRIP_3]
-
-#######################
+from quantum_errors import NormalizationError, ToleranceError
+from util import *
 
 class QuantumState: 
 	""" General quantum state; can be a mixed, pure, entangled or product state. 
@@ -42,8 +21,8 @@ class QuantumState:
 		""" Computes the overlap of the current state with the singlet state _SINGLET, using 
 		the vector representation of the Bell states.  
 		"""
-		right_side = np.matmul(self.density, _VEC_SINGLET)
-		return float(np.matmul(np.conj(_VEC_SINGLET), right_side)) # should we return a Python float or numpy float here? 
+		right_side = np.matmul(self.density, VEC_SINGLET_)
+		return float(np.matmul(np.conj(VEC_SINGLET_), right_side)) # should we return a Python float or numpy float here?
 
 class DiagonalState(QuantumState): 
 	""" Generates an entangled state that is diagonal in the Bell basis. 
@@ -63,10 +42,10 @@ class DiagonalState(QuantumState):
 		self.epsilon = epsilon
 		self.normalization = normalization
 
-		self.singlet_p = self.normalization[0]
-		self.trip_1_p = self.normalization[1]
-		self.trip_2_p = self.normalization[2]
-		self.trip_3_p = self.normalization[3]
+		# self.singlet_p = self.normalization[0]
+		# self.trip_1_p = self.normalization[1]
+		# self.trip_2_p = self.normalization[2]
+		# self.trip_3_p = self.normalization[3]
 
 		net_prob = sum(self.normalization)
 		if (1.0 + self.epsilon < net_prob) or (net_prob < 1.0 - self.epsilon):
@@ -74,7 +53,7 @@ class DiagonalState(QuantumState):
 
 		# This is a functional implementation of the density matrix, mostly for me to practice! 
 		# Not particularly readable, so I've included the equivalent code below. Either implementation works.  
-		density_basis = list(map(lambda p, state: p*np.outer(state, state), self.normalization, _BELL_STATES))
+		density_basis = list(map(lambda p, state: p*np.outer(state, state), self.normalization, BELL_STATES_))
 		self.density = sum(density_basis)
 
 		## Computing the density matrix, readable code ## 
@@ -99,9 +78,12 @@ class DiagonalState(QuantumState):
 		Currently only for debugging; output of this function matches the self.density object constructed in 
 		the initializer. 
 		"""
-		density_basis = list(map(lambda p, state: p*np.outer(state, state), self.normalization, _BELL_VECTORS))	 
+		density_basis = list(map(lambda p, state: p*np.outer(state, state), self.normalization, BELL_VECTORS_))
 		return sum(density_basis)
 
-
-
+	def uni_y_rot(self):
+		""" Perform unitary y rotation.
+		"""
+		self.normalization[1], self.normalization[3] = self.normalization[3], self.normalization[1]
+		self.normalization[0], self.normalization[2] = self.normalization[2], self.normalization[0]
 	

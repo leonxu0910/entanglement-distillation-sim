@@ -1,32 +1,14 @@
 """ 
 Sandbox for EntangledState class development.
 """
-from entangled_state import QuantumState, DiagonalState 
-import numpy as np
+from entangled_state import QuantumState, DiagonalState
+from util import *
 
-###### Class constants from EntangledState; useful for debugging ###### 
-
-# Basis vectors
-_UP = np.array([1,0])
-_DOWN = np.array([0,1])
-
-# Bell states, as matrices 
-_SINGLET = 1/np.sqrt(2) * (np.outer(_UP, _DOWN) - np.outer(_DOWN, _UP))
-_TRIP_1 = 1/np.sqrt(2) * (np.outer(_UP, _DOWN) + np.outer(_DOWN, _UP))
-_TRIP_2 = 1/np.sqrt(2) * (np.outer(_UP, _UP) + np.outer(_DOWN, _DOWN))
-_TRIP_3 = 1/np.sqrt(2) * (np.outer(_UP, _UP) - np.outer(_DOWN, _DOWN))
-_BELL_STATES = [_SINGLET, _TRIP_1, _TRIP_2, _TRIP_3] # Useful for some methods below 
-
-# Bell states, as vectors in a four-dimensional Hilbert space spanned by |00>, |01>, |10>, and |11> 
-_VEC_SINGLET = np.array([0, -1/np.sqrt(2), 1/np.sqrt(2), 0])
-_VEC_TRIP_1 = np.array([0, 1/np.sqrt(2), 1/np.sqrt(2), 0])
-_VEC_TRIP_2 = np.array([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
-_VEC_TRIP_3 = np.array([-1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
-_BELL_VECTORS = [_VEC_SINGLET, _VEC_TRIP_1, _VEC_TRIP_2, _VEC_TRIP_3]
+###### Class constants from EntangledState; useful for debugging ######
 
 if __name__ == "__main__":
 	# Various implementations of density matrix construction 
-	test = [_SINGLET, _TRIP_1]
+	test = [SINGLET_, TRIP_1_]
 	test2 = [0.4, 0.6] 
 
 	result = 0
@@ -48,7 +30,7 @@ if __name__ == "__main__":
 	# tolerance_error = EntangledState(epsilon=0.3)
 
 	# Testing vector representation of Bell states 
-	vector_test = (np.inner(_VEC_SINGLET, _VEC_TRIP_3), np.inner(_VEC_TRIP_3, _VEC_TRIP_2), np.inner(_VEC_TRIP_1, _VEC_SINGLET)) 
+	vector_test = (np.inner(VEC_SINGLET_, VEC_TRIP_3_), np.inner(VEC_TRIP_3_, VEC_TRIP_2_), np.inner(VEC_TRIP_1_, VEC_SINGLET_))
 	print(vector_test) # returns (0.0, 0.0, 0.0) as expected 
 
 	# Testing fidelity function 
@@ -73,5 +55,18 @@ if __name__ == "__main__":
 	general_state = QuantumState(singlet)
 	print(general_state.fidelity()) # returns 1.0, as expected 
 
+	# Testing unitary y rotation
+	# Pure state test
+	psi_p = DiagonalState(normalization=[0.0, 1.0, 0.0, 0.0])
+	psi_p.uni_y_rot()
+	print("Psi+ -> Phi- rotated: \n", psi_p.density_vector())
+	print("Phi-: \n", np.outer(TRIP_3_, TRIP_3_))
+	# Mixed state test
+	F = 0.7
+	mostly_psi_n = DiagonalState(normalization=werner_norm(F, 0))
+	mostly_psi_n.uni_y_rot()
+	mostly_phi_p = DiagonalState(normalization=werner_norm(F, 2))
+	print("Mostly phi+ state rotated: \n", mostly_psi_n.density_vector())
+	print("Mostly phi+ state: \n", mostly_phi_p.density_vector())
 
 
