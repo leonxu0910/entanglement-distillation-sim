@@ -21,10 +21,5 @@ BELL_VECTORS_ = [VEC_SINGLET_, VEC_TRIP_1_, VEC_TRIP_2_, VEC_TRIP_3_]
 
 #######################
 
-def werner_norm(F, state):
-    # Generate normalization for Werner state
-    F_ = (1-F)/3
-    norm = [F_, F_, F_, F_]
-    norm[state] = F
-    return norm
+
 

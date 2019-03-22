@@ -42,11 +42,6 @@ class DiagonalState(QuantumState):
 		self.epsilon = epsilon
 		self.normalization = normalization
 
-		# self.singlet_p = self.normalization[0]
-		# self.trip_1_p = self.normalization[1]
-		# self.trip_2_p = self.normalization[2]
-		# self.trip_3_p = self.normalization[3]
-
 		net_prob = sum(self.normalization)
 		if (1.0 + self.epsilon < net_prob) or (net_prob < 1.0 - self.epsilon):
 			raise NormalizationError("Entangled state not properly normalized within given epsilon parameter.")
@@ -56,23 +51,6 @@ class DiagonalState(QuantumState):
 		density_basis = list(map(lambda p, state: p*np.outer(state, state), self.normalization, BELL_STATES_))
 		self.density = sum(density_basis)
 
-		## Computing the density matrix, readable code ## 
-		"""
-		self.density = 0
-		for state, p in zip(_BELL_STATES, self.normalization):
-			self.density += p*np.outer(state, state)
-		"""
-
-	# Moved to QuantumState class 
-	""" 
-	def fidelity(self):
-		# Computes the overlap of the current state with the singlet state __SINGLET, using 
-		# the vector representation of the Bell states.  
-		
-		right_side = np.matmul(self.density, _VEC_SINGLET)
-		return float(np.matmul(np.conj(_VEC_SINGLET), right_side)) # should we return a Python float or numpy float here? 
-	"""
-
 	def density_vector(self):
 		""" Computes the density matrix of current state with the vector representation of the Bell states. 
 		Currently only for debugging; output of this function matches the self.density object constructed in 
@@ -81,9 +59,3 @@ class DiagonalState(QuantumState):
 		density_basis = list(map(lambda p, state: p*np.outer(state, state), self.normalization, BELL_VECTORS_))
 		return sum(density_basis)
 
-	def uni_y_rot(self):
-		""" Perform unitary y rotation.
-		"""
-		self.normalization[1], self.normalization[3] = self.normalization[3], self.normalization[1]
-		self.normalization[0], self.normalization[2] = self.normalization[2], self.normalization[0]
-	
