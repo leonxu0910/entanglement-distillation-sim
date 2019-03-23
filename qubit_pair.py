@@ -30,6 +30,6 @@ class QubitPair(dict):
   def pure_triplet(cls):
     return {"phi+": 1.0, "phi-": 0.0, "psi+": 0.0, "psi-": 0.0}
 
-  
+   
 
 
